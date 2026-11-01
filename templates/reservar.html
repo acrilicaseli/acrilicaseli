@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="titulo">Reservar turno</h1>
+
+<form method="POST" class="form-reserva" id="form-reserva"
+      enctype="multipart/form-data">
+
+  <label>Tu nombre
+    <input type="text" name="cliente" required>
+  </label>
+
+  <label>Teléfono (WhatsApp)
+    <input type="tel" name="telefono" placeholder="Ej: 1122334455" required>
+  </label>
+
+  <label>Servicio
+    <select name="servicio" id="servicio" required>
+      {% for nombre_s, precio in servicios.items() %}
+        <option value="{{ nombre_s }}" data-precio="{{ precio }}">
+          {{ nombre_s }} — ${{ "{:,}".format(precio).replace(",", ".") }}
+        </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Deco 3D (cantidad de uñas)
+    <input type="number" name="deco_3d" id="deco_3d" value="0" min="0" max="10">
+  </label>
+
+  <label>Dijes (cantidad)
+    <input type="number" name="dijes" id="dijes" value="0" min="0">
+  </label>
+
+  <label>Fecha
+    <input type="date" name="fecha" id="fecha" value="{{ fecha_sel }}" required>
+  </label>
+
+  <label>Horario
+    <select name="horario" id="horario" required>
+      {% for h in horarios %}
+        <option value="{{ h }}" {% if h in ocupados %}disabled{% endif %}>
+          {{ h }}{% if h in ocupados %} (ocupado){% endif %}
+        </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <div class="total-box">
+    <span>Total:</span>
+    <strong id="total">$0</strong>
+  </div>
+
+  <div class="total-box" style="background:#fff0f5;">
+    <span>Seña ({{ porcentaje_senia }}%) a transferir:</span>
+    <strong id="senia" style="color:#c71585;">$0</strong>
+  </div>
+
+  <div class="datos-pago">
+    <h3>💳 Datos para transferir</h3>
+    <p><b>Titular:</b> {{ titular }}</p>
+    <p><b>Banco:</b> {{ banco }}</p>
+    <p>
+      <b>Alias:</b> <code id="alias">{{ alias }}</code>
+      <button type="button" class="btn-copiar" onclick="copiar('alias')">Copiar</button>
+    </p>
+    <p>
+      <b>CBU:</b> <code id="cbu">{{ cbu }}</code>
+      <button type="button" class="btn-copiar" onclick="copiar('cbu')">Copiar</button>
+    </p>
+    <p class="aviso">
+      ⚠️ Transferí la seña del {{ porcentaje_senia }}% y subí la captura para confirmar el turno.
+    </p>
+  </div>
+
+  <label>Captura de la transferencia (obligatorio)
+    <input type="file" name="captura" id="captura"
+           accept="image/*" required>
+  </label>
+
+  <button type="submit" class="btn-principal" id="btn-confirmar">
+    Confirmar reserva ✅
+  </button>
+</form>
+
+<script>
+  const preciosServicios = {{ servicios|tojson }};
+  const precioDeco = {{ precio_deco }};
+  const precioDije = {{ precio_dije }};
+  const PORC_SENIA = {{ porcentaje_senia }} / 100;
+  const inputFecha = document.getElementById("fecha");
+  const selectHorario = document.getElementById("horario");
+
+  function calcular() {
+    const serv = document.getElementById("servicio").value;
+    const deco = parseInt(document.getElementById("deco_3d").value || 0);
+    const dijes = parseInt(document.getElementById("dijes").value || 0);
+    const total = (preciosServicios[serv] || 0) + deco * precioDeco + dijes * precioDije;
+    const senia = Math.round(total * PORC_SENIA);
+    document.getElementById("total").textContent = "$" + total.toLocaleString("es-AR");
+    document.getElementById("senia").textContent = "$" + senia.toLocaleString("es-AR");
+  }
+
+  function copiar(id) {
+    const texto = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(texto).then(() => {
+      alert("Copiado: " + texto);
+    });
+  }
+
+  document.getElementById("form-reserva").addEventListener("input", calcular);
+  calcular();
+
+  inputFecha.addEventListener("change", async () => {
+    const r = await fetch(`/api/horarios/${inputFecha.value}`);
+    const data = await r.json();
+    [...selectHorario.options].forEach(opt => {
+      const ocupado = data.ocupados.includes(opt.value);
+      opt.disabled = ocupado;
+      opt.textContent = opt.value + (ocupado ? " (ocupado)" : "");
+    });
+  });
+</script>
+
+{% endblock %}

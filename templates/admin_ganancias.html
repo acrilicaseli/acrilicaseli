@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="titulo">Ganancias</h1>
+
+<div class="admin-nav">
+  <a href="{{ url_for('admin_turnos') }}">Turnos</a>
+  <a href="{{ url_for('admin_ganancias') }}" class="activo">Ganancias</a>
+  <a href="{{ url_for('admin_precios') }}">Precios</a>
+  <a href="{{ url_for('admin_logout') }}" class="rojo">Salir</a>
+</div>
+
+<div class="stat-box">
+  <p>Total turnos: <b>{{ cant }}</b></p>
+  <p class="total-grande">${{ "{:,}".format(total).replace(",", ".") }}</p>
+</div>
+
+<h2>Detalle por mes</h2>
+<table class="tabla">
+  <thead><tr><th>Mes</th><th>Total</th></tr></thead>
+  <tbody>
+    {% for mes, monto in por_mes.items() %}
+    <tr>
+      <td>{{ mes }}</td>
+      <td>${{ "{:,}".format(monto).replace(",", ".") }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

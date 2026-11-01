@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="confirmacion">
+  <h1>✅ ¡Reserva confirmada!</h1>
+  <p>Gracias <b>{{ turno.cliente }}</b>, te esperamos 💅</p>
+  
+  <div class="ticket" style="border: 2px dashed #ff69b4; background: #fffafc;">
+    <p><b>Fecha:</b> {{ turno.fecha }}</p>
+    <p><b>Hora:</b> {{ turno.horario }}</p>
+    <p><b>Servicio:</b> {{ turno.servicio }}</p>
+    {% if turno.deco_3d %}<p><b>Deco 3D:</b> {{ turno.deco_3d }} uñas</p>{% endif %}
+    {% if turno.dijes %}<p><b>Dijes:</b> {{ turno.dijes }}</p>{% endif %}
+    <hr>
+    <p><b>Total:</b> ${{ "{:,}".format(turno.total).replace(",", ".") }}</p>
+    <p><b>Seña abonada:</b> ${{ "{:,}".format(senia).replace(",", ".") }}</p>
+    <p class="total-final">
+      <b>Saldo a pagar: ${{ "{:,}".format(turno.total - senia).replace(",", ".") }}</b>
+    </p>
+  </div>
+
+  <div class="alerta-whatsapp" style="background: #e8f5e9; padding: 16px; border-radius: 14px; margin: 20px 0; border: 1px solid #c8e6c9;">
+    <h3 style="color: #2e7d32; margin-bottom: 10px;">📲 Paso final para confirmar</h3>
+    <p style="font-size: 0.95rem; margin-bottom: 15px;">
+      Para que Eli te agende, por favor <b>sacá una captura de pantalla de esta reserva</b> y envíasela por WhatsApp junto con el comprobante de pago.
+    </p>
+    <!-- El numero de tu hermana va aca (formato internacional sin el +) -->
+    <a href="https://wa.me/5491124699885?text=Hola%20Eli!%20Reserv%C3%A9%20un%20turno%20a%20nombre%20de%20{{ turno.cliente }}%20para%20el%20d%C3%ADa%20{{ turno.fecha }}%20a%20las%20{{ turno.horario }}.%20Te%20adjunto%20la%20captura%20y%20el%20comprobante." 
+       target="_blank" 
+       class="btn-principal" 
+       style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="24" height="24" style="filter: brightness(0) invert(1);">
+      Enviar captura por WhatsApp
+    </a>
+  </div>
+
+  {% if turno.token %}
+  <a href="{{ url_for('ver_ticket', token=turno.token) }}" target="_blank"
+     class="btn-principal" style="margin-bottom:10px; background: #ffe4ec; color: #c71585; border: 1px solid #ffc7de;">
+    📄 Descargar ticket PDF
+  </a>
+  {% endif %}
+
+  <a href="/" class="btn-principal" style="background: #eee; color: #555; box-shadow: none;">Volver al inicio</a>
+</div>
+
+{% endblock %}

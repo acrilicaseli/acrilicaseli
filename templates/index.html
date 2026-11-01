@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="titulo">Lista de precios 2026</h1>
+<p class="subtitulo">Elegí tu servicio y reservá tu turno 👇</p>
+
+<div class="servicios">
+  {% for nombre_s, precio in servicios.items() %}
+  <div class="card">
+    <span class="nombre">{{ nombre_s }}</span>
+    <span class="precio">${{ "{:,}".format(precio).replace(",", ".") }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="extras">
+  <p>✨ <b>Deco 3D:</b> ${{ "{:,}".format(precio_deco).replace(",", ".") }} por uña</p>
+  <p>💎 <b>Dijes:</b> ${{ "{:,}".format(precio_dije).replace(",", ".") }} c/u</p>
+</div>
+
+<a href="{{ url_for('reservar') }}" class="btn-principal">Reservar turno 📅</a>
+
+{% endblock %}

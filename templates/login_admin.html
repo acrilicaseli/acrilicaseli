@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="titulo">Panel de administración</h1>
+<form method="POST" class="form-login">
+  <label>Contraseña
+    <input type="password" name="password" required autofocus>
+  </label>
+  <button type="submit" class="btn-principal">Entrar</button>
+</form>
+{% endblock %}

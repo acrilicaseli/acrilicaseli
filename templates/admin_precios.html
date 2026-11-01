@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="titulo">Editar precios</h1>
+
+<div class="admin-nav">
+  <a href="{{ url_for('admin_turnos') }}">Turnos</a>
+  <a href="{{ url_for('admin_ganancias') }}">Ganancias</a>
+  <a href="{{ url_for('admin_precios') }}" class="activo">Precios</a>
+  <a href="{{ url_for('admin_logout') }}" class="rojo">Salir</a>
+</div>
+
+<form method="POST" class="form-precios">
+  {% for nombre_s, precio in servicios.items() %}
+  <label>{{ nombre_s }}
+    <input type="number" name="precio::{{ nombre_s }}" value="{{ precio }}" min="0">
+  </label>
+  {% endfor %}
+
+  <label>Deco 3D (por uña)
+    <input type="number" name="precio_deco_3d" value="{{ precio_deco }}" min="0">
+  </label>
+
+  <label>Dijes (c/u)
+    <input type="number" name="precio_dije" value="{{ precio_dije }}" min="0">
+  </label>
+
+  <button type="submit" class="btn-principal">Guardar cambios</button>
+</form>
+{% endblock %}

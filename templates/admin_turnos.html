@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="titulo">Turnos</h1>
+
+<div class="admin-nav">
+  <a href="{{ url_for('admin_turnos') }}" class="activo">Turnos</a>
+  <a href="{{ url_for('admin_ganancias') }}">Ganancias</a>
+  <a href="{{ url_for('admin_precios') }}">Precios</a>
+  <a href="{{ url_for('admin_logout') }}" class="rojo">Salir</a>
+</div>
+
+<form method="GET" class="filtro">
+  <input type="date" name="fecha" value="{{ fecha }}">
+  <button type="submit">Filtrar</button>
+  <a href="{{ url_for('admin_turnos') }}">Ver todos</a>
+</form>
+
+{% if turnos %}
+<div class="lista-turnos">
+  {% for t in turnos %}
+  <div class="turno-card">
+    <div>
+      <b>{{ t.horario }}</b> — {{ t.fecha }}<br>
+      {{ t.cliente }} · {{ t.servicio }}<br>
+      <small>
+        Total: ${{ "{:,}".format(t.total).replace(",", ".") }} ·
+        Seña: ${{ "{:,}".format(t.senia or 0).replace(",", ".") }}
+        {% if t.pagado %} ✅ pagado{% else %} ⏳ pendiente{% endif %}
+      </small>
+      {% if t.telefono %}· <a href="https://wa.me/{{ t.telefono }}" target="_blank">WhatsApp</a>{% endif %}
+    </div>
+    <div class="derecha">
+      {% if t.captura %}
+        <a href="{{ url_for('ver_captura', filename=t.captura) }}" target="_blank">📷 Ver</a>
+      {% endif %}
+      {% if not t.pagado %}
+      <form method="POST" action="{{ url_for('admin_pagado', tid=t.id) }}">
+        <button class="btn-rojo" style="background:#28a745;">✓ Pagado</button>
+      </form>
+      {% endif %}
+      <form method="POST" action="{{ url_for('admin_cancelar', tid=t.id) }}"
+            onsubmit="return confirm('Cancelar este turno?')">
+        <button class="btn-rojo">✕</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No hay turnos.</p>
+{% endif %}
+{% endblock %}
